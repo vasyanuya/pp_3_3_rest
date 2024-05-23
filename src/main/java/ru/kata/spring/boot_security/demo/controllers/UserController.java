@@ -11,7 +11,6 @@ import javax.validation.Valid;
 import java.security.Principal;
 
 @Controller
-//@RequestMapping("/")
 public class UserController {
 
     private final UserService userService;
@@ -24,6 +23,7 @@ public class UserController {
     public String homePage() {
         return "index";
     }
+
     @GetMapping(value = "/admin")
     public String listUsers(Model model) {
         model.addAttribute("listUsers", userService.listUsers());
@@ -51,13 +51,14 @@ public class UserController {
     }
 
     @GetMapping("/edit")
-    public String editUser(@RequestParam("id") Long id, Model model ) {
+    public String editUser(@RequestParam("id") Long id, Model model) {
         model.addAttribute("user", userService.findUserById(id));
         return "edit";
     }
+
     @PostMapping("/edit")
-    public String updateEditUser (@ModelAttribute("user") @Valid User user,
-                                  BindingResult bindingResult) {
+    public String updateEditUser(@ModelAttribute("user") @Valid User user,
+                                 BindingResult bindingResult) {
         if (bindingResult.hasErrors())
             return "edit";
         userService.createUser(user);
