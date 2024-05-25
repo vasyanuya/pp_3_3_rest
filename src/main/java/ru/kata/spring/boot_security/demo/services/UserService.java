@@ -1,69 +1,29 @@
 package ru.kata.spring.boot_security.demo.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.entities.Role;
 import ru.kata.spring.boot_security.demo.entities.User;
-import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.Set;
 
-@Service
-public class UserService implements UserDetailsService {
 
-    private final UserRepository userRepository;
+public interface UserService extends UserDetailsService {
 
-    @Autowired
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    public UserDetails loadUserByUsername(String username);
 
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username);
-    }
+    public boolean saveUser(User user);
 
-    @Override
-    @Transactional
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = findByUsername(username);
+    public boolean saveUser(User user, List<String> rolesFromView);
 
-        if (user == null) {
-            throw new UsernameNotFoundException(String.format("User '%s' not found", username));
-        }
+    public boolean saveUser(User user, Set<Role> roles);
 
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(),
-                mapRolesAuthorities(user.getRoles()));
-    }
+    public List<User> getListAllUsers();
 
-    private Collection<? extends GrantedAuthority> mapRolesAuthorities(Collection<Role> roles) {
-        return roles.stream().map(r -> new SimpleGrantedAuthority(r.getName())).collect(Collectors.toList());
-    }
+    public User findUserById(int id);
 
-    public User findUserById(Long userId) {
-        Optional<User> userById = userRepository.findById(userId);
-        return userById.orElse(null);
-    }
+    public void updateUser(User user, List<String> rolesFromView);
 
-    public List<User> listUsers() {
-        return userRepository.findAll();
-    }
-
-    @Transactional
-    public void createUser(User user) {
-        userRepository.save(user);
-    }
-
-    @Transactional
-    public void deleteUser(Long id) {
-        userRepository.deleteById(id);
-    }
+    public void deleteUser(int id);
 }

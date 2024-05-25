@@ -4,6 +4,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.Collection;
@@ -16,12 +18,12 @@ public class User implements UserDetails {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
-    @Column(name = "user_name")
+    @Column(name = "name")
     @NotEmpty(message = "Name should not be empty")
     @Size(min = 1, max = 30, message = "Name should be between 1 and 30 characters")
-    private String username;
+    private String name;
 
     @Column(name = "password")
     @NotEmpty(message = "password should not be empty")
@@ -33,54 +35,68 @@ public class User implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
 
+    @Column(name = "surname")
+    @NotEmpty(message = "password should be not empty")
+    @Size(min = 2, max = 150, message = "surname should be between 2 and 30")
+    private String surname;
+
+    @Column(name = "age")
+    @Min(value = 0, message = "age should be more than 0")
+    private int age;
+
+    @Column(name = "email")
+    @NotEmpty(message = "email should be not empty")
+    @Email
+    private String email;
+
     public User() {
 
     }
 
-    public void setPassword(String password) {
+    public User(String name, String password, String surname, int age) {
+        this.name = name;
         this.password = password;
+        this.surname = surname;
+        this.age = age;
     }
 
-    public Set<Role> getRoles() {
-        return roles;
+
+    public User(String name, String password, String surname, int age, String email) {
+        this.name = name;
+        this.password = password;
+        this.surname = surname;
+        this.age = age;
+        this.email = email;
     }
 
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles;
+        return getRoles();
     }
 
-    @Override
     public String getPassword() {
         return password;
     }
 
     @Override
     public String getUsername() {
-        return username;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setUsername(String userName) {
-        this.username = userName;
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", userName='" + username + '}';
+        return name;
     }
 
     @Override
@@ -101,5 +117,54 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", password='" + password + '\'' +
+                ", surname='" + surname + '\'' +
+                ", age=" + age +
+                ", email='" + email + '\'' +
+                ", roles=" + roles +
+                '}';
     }
 }

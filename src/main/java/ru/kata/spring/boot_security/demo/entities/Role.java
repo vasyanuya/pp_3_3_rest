@@ -6,43 +6,41 @@ import javax.persistence.*;
 import java.util.Set;
 
 @Entity
-@Table(name = "roles")
+@Table(name = "role")
 public class Role implements GrantedAuthority {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String name;
-    @Transient
+    private int Id;
+
+    @Column(name = "role_name")
+    private String roleName;
+
     @ManyToMany(mappedBy = "roles")
     private Set<User> users;
 
     public Role() {
     }
 
-    public Role(Long id) {
-        this.id = id;
+    public Role(int id, String roleName) {
+        Id = id;
+        this.roleName = roleName;
     }
 
-    public Role(Long id, String name) {
-        this.id = id;
-        this.name = name;
+    public int getId() {
+        return Id;
     }
 
-    public Long getId() {
-        return id;
+    public void setId(int id) {
+        Id = id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public String getRoleName() {
+        return roleName;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
     }
 
     public Set<User> getUsers() {
@@ -53,9 +51,21 @@ public class Role implements GrantedAuthority {
         this.users = users;
     }
 
+    //это просто для отображения без "ROLE_"
+    public String getRoleNameWithoutRole() {
+        return roleName.substring(5);
+    }
 
     @Override
     public String getAuthority() {
-        return getName();
+        return roleName;
+    }
+
+    @Override
+    public String toString() {
+        return "Role{" +
+                "Id=" + Id +
+                ", roleName='" + roleName + '\'' +
+                '}';
     }
 }
