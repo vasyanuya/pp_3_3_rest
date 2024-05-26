@@ -28,7 +28,6 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
         this.roleSerivce = roleSerivce;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-
     }
 
     @Override
@@ -43,22 +42,14 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     public boolean saveUser(User user) {
-        if (userRepository.findUserByName(user.getName()).isPresent()) {
-            return false;
-        }
-        user.setRoles(Collections.singleton(new Role(1, "ROLE_USER")));
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
-        return true;
-    }
 
-    @Transactional
-    public boolean saveUser(User user, List<String> rolesFromView) {
-//        if (userRepository.findUserByName(user.getName()).isPresent()) {
-//            return false;
-//        }
-        Set<Role> roles = roleSerivce.findByRoleNameIn(rolesFromView);
-        user.setRoles(roles);
+        if (user.getRoles().isEmpty()) {
+            user.setRoles(Collections.singleton(new Role(1, "ROLE_USER")));
+        }
+        user.setRoles(user.getRoles().stream()
+                .map(role -> roleSerivce.getByName(role.getRoleName()))
+                .collect(Collectors.toSet()));
+
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         userRepository.save(user);
         return true;
@@ -84,16 +75,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Transactional
-    public void updateUser(User user, List<String> rolesFromView) {
+    public void updateUser(User user) {
 
         User userFromDB = userRepository.findUserById(user.getId());
+        if (user.getRoles().isEmpty()) {
+            user.setRoles(userFromDB.getRoles());
+        } else {
+            user.setRoles(user.getRoles().stream()
+                    .map(role -> roleSerivce.getByName(role.getRoleName()))
+                    .collect(Collectors.toSet()));
+        }
+
         if (!user.getPassword().equals(userFromDB.getPassword())) {
             user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         }
 
-        user.setRoles(rolesFromView.stream()
-                .map(role -> roleSerivce.findRoleByRoleName(role))
-                .collect(Collectors.toSet()));
         userRepository.save(user);
     }
 
@@ -102,5 +98,3 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(id);
     }
 }
-
-

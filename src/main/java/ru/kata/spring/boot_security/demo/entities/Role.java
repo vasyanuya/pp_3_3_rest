@@ -1,5 +1,6 @@
 package ru.kata.spring.boot_security.demo.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
@@ -16,6 +17,7 @@ public class Role implements GrantedAuthority {
     @Column(name = "role_name")
     private String roleName;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "roles")
     private Set<User> users;
 
@@ -51,14 +53,13 @@ public class Role implements GrantedAuthority {
         this.users = users;
     }
 
-    //это просто для отображения без "ROLE_"
-    public String getRoleNameWithoutRole() {
-        return roleName.substring(5);
-    }
-
     @Override
     public String getAuthority() {
         return roleName;
+    }
+
+    public String getRoleNameWithoutRole() {
+        return roleName.substring(5);
     }
 
     @Override

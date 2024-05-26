@@ -7,17 +7,17 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import ru.kata.spring.boot_security.demo.entities.User;
 
 import java.util.Collection;
 
-@Controller
-@RequestMapping("/user")
+@RestController
+@RequestMapping("/api/user")
 public class UserController {
 
     @GetMapping()
-    public String adminInfo(Model model, @AuthenticationPrincipal User user) {
-        model.addAttribute("currentUser", user);
-        return "user";
+    public User adminInfo(@AuthenticationPrincipal User user) {
+        return user;
     }
 }

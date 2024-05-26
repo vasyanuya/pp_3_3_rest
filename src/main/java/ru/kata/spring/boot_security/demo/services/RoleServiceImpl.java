@@ -12,7 +12,6 @@ import java.util.Set;
 public class RoleServiceImpl implements RoleSerivce {
 
     private final RoleRepository roleRepository;
-
     @Autowired
     public RoleServiceImpl(RoleRepository roleRepository) {
         this.roleRepository = roleRepository;
@@ -32,7 +31,8 @@ public class RoleServiceImpl implements RoleSerivce {
         return roleRepository.findByRoleNameIn(roles);
     }
 
-    public Role findRoleByRoleName(String roleName) {
-        return roleRepository.findRoleByRoleName(roleName);
+    @Override
+    public Role getByName(String name) {
+        return roleRepository.findByRoleName(name);
     }
 }

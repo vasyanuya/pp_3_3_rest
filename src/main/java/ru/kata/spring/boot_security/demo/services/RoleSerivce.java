@@ -13,6 +13,6 @@ public interface RoleSerivce {
 
     public Set<Role> findByRoleNameIn(List<String> roles);
 
-    public Role findRoleByRoleName(String roleName);
+    public Role getByName(String name);
 
 }
